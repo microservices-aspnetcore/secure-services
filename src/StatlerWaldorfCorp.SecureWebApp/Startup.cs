@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace MvcApp
+namespace StatlerWaldorfCorp.SecureWebApp
 {
     public class Startup
     {
@@ -16,8 +16,7 @@ namespace MvcApp
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)                
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
