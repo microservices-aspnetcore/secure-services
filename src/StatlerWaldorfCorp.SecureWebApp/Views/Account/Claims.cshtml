@@ -3,12 +3,13 @@
 
         <h3>Current User Claims</h3>
 
-        @User.Identity.Name<br/>
+        <br/>  
+        <img src="@ViewData["picture"]" height="64" width="64"/><br/>
 
         <table class="table">
             <thead>
                 <tr>
-                    <th>Claim></th><th>Value</th>
+                    <th>Claim</th><th>Value</th>
                 </tr>
             </thead>
             <tbody>

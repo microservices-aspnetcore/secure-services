@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 
@@ -80,10 +82,27 @@ namespace StatlerWaldorfCorp.SecureWebApp
                 ResponseType = "code",
                 CallbackPath = new PathString("/signin-auth0"),
 
-                ClaimsIssuer = "Auth0"
+                ClaimsIssuer = "Auth0",
+                SaveTokens = true,
+                Events = new OpenIdConnectEvents
+                {
+                    OnTicketReceived = context =>
+                    {
+                        var identity = context.Principal.Identity as ClaimsIdentity;
+                        if (identity != null) {
+                            if (!context.Principal.HasClaim( c => c.Type == ClaimTypes.Name) &&
+                            identity.HasClaim( c => c.Type == "name"))
+                            identity.AddClaim(new Claim(ClaimTypes.Name, identity.FindFirst("name").Value));
+                        }
+                        return Task.FromResult(0);
+                    }
+                }
             };
             options.Scope.Clear();
             options.Scope.Add("openid");
+            options.Scope.Add("name");
+            options.Scope.Add("email");
+            options.Scope.Add("picture");
 
             app.UseOpenIdConnectAuthentication(options);
 

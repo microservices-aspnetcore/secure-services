@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using System.Security.Claims;
 
 namespace StatlerWaldorfCorp.SecureWebApp.Controllers
 {
@@ -24,6 +26,9 @@ namespace StatlerWaldorfCorp.SecureWebApp.Controllers
         [Authorize]
         public IActionResult Claims()
         {
+            ViewData["Title"] = "Claims";
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            ViewData["picture"] = identity.FindFirst("picture").Value;
             return View();
         }
     }
