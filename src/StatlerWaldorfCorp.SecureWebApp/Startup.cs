@@ -12,7 +12,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
-using System.Diagnostics;
 
 
 namespace StatlerWaldorfCorp.SecureWebApp
@@ -50,7 +49,7 @@ namespace StatlerWaldorfCorp.SecureWebApp
                     IOptions<OpenIDSettings> openIdSettings)
         {
 
-            Debug.WriteLine("Using OpenID Auth domain of : " + openIdSettings.Value.Domain);
+            Console.WriteLine("Using OpenID Auth domain of : " + openIdSettings.Value.Domain);
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
