@@ -70,33 +70,7 @@ namespace StatlerWaldorfCorp.SecureWebApp
                 AutomaticChallenge = true
             });
 
-            var options = new OpenIdConnectOptions("Auth0")
-            {
-                Authority = $"https://{openIdSettings.Value.Domain}",
-                ClientId = openIdSettings.Value.ClientId,
-                ClientSecret = openIdSettings.Value.ClientSecret,
-                AutomaticAuthenticate = false,
-                AutomaticChallenge = false,
-
-                ResponseType = "code",
-                CallbackPath = new PathString("/signin-auth0"),
-
-                ClaimsIssuer = "Auth0",
-                SaveTokens = true,
-                Events = new OpenIdConnectEvents
-                {
-                    OnTicketReceived = context =>
-                    {
-                        var identity = context.Principal.Identity as ClaimsIdentity;
-                        if (identity != null) {
-                            if (!context.Principal.HasClaim( c => c.Type == ClaimTypes.Name) &&
-                            identity.HasClaim( c => c.Type == "name"))
-                            identity.AddClaim(new Claim(ClaimTypes.Name, identity.FindFirst("name").Value));
-                        }
-                        return Task.FromResult(0);
-                    }
-                }
-            };
+            var options = CreateOpenIdConnectOptions(openIdSettings);
             options.Scope.Clear();
             options.Scope.Add("openid");
             options.Scope.Add("name");
@@ -111,6 +85,44 @@ namespace StatlerWaldorfCorp.SecureWebApp
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private OpenIdConnectOptions CreateOpenIdConnectOptions(
+            IOptions<OpenIDSettings> openIdSettings)
+        {
+            return new OpenIdConnectOptions("Auth0")
+            {
+                Authority = $"https://{openIdSettings.Value.Domain}",
+                ClientId = openIdSettings.Value.ClientId,
+                ClientSecret = openIdSettings.Value.ClientSecret,
+                AutomaticAuthenticate = false,
+                AutomaticChallenge = false,
+
+                ResponseType = "code",
+                CallbackPath = new PathString("/signin-auth0"),
+
+                ClaimsIssuer = "Auth0",
+                SaveTokens = true,
+                Events = CreateOpenIdConnectEvents()
+            };
+        }
+
+        private OpenIdConnectEvents CreateOpenIdConnectEvents()
+        {
+            return new OpenIdConnectEvents()
+            {
+                OnTicketReceived = context =>
+                {
+                    var identity = 
+                        context.Principal.Identity as ClaimsIdentity;
+                    if (identity != null) {
+                        if (!context.Principal.HasClaim( c => c.Type == ClaimTypes.Name) &&
+                        identity.HasClaim( c => c.Type == "name"))
+                        identity.AddClaim(new Claim(ClaimTypes.Name, identity.FindFirst("name").Value));
+                    }
+                    return Task.FromResult(0);
+                }
+            };
         }
     }
 }
