@@ -1,9 +1,29 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
 
-class Program
+namespace StatlerWaldorfCorp.Secureservice 
 {
-    static void Main(string[] args)
+    class Program
     {
-        Console.WriteLine("Hello World!");
+        static void Main(string[] args)
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                    .AddCommandLine(args)
+                    .Build();
+
+                var host = new WebHostBuilder()
+                    .UseKestrel()
+                    .UseContentRoot(Directory.GetCurrentDirectory())                
+                    .UseStartup<Startup>()
+                    .UseConfiguration(config)
+                    .Build();
+
+                host.Run();
+        }
     }
 }
