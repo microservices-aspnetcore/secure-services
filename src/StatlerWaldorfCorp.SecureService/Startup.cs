@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
+using Microsoft.IdentityModel.Tokens;
 
 namespace StatlerWaldorfCorp.Secureservice
 {
@@ -31,6 +31,23 @@ namespace StatlerWaldorfCorp.Secureservice
          {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            
+            app.UseJwtBearerAuthentication(new JwtBearerOptions  
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidIssuer = "https://fake.issuer.com",
+
+                    ValidateAudience = false,
+                    ValidAudience = "https://sampleservice.example.com",
+
+                    ValidateLifetime = true,
+                }
+            });
+
             app.UseMvc();
          }
 
