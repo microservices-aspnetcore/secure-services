@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace StatlerWaldorfCorp.Secureservice
 {
     public class Startup
     {
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -29,6 +29,10 @@ namespace StatlerWaldorfCorp.Secureservice
          public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
                                 ILoggerFactory loggerFactory)
          {
+            string SecretKey = "seriouslyneverleavethissittinginyourcode";
+            SymmetricSecurityKey signingKey = 
+                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+            
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
             
@@ -38,13 +42,15 @@ namespace StatlerWaldorfCorp.Secureservice
                 AutomaticChallenge = true,
                 TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
                     ValidateIssuer = false,
                     ValidIssuer = "https://fake.issuer.com",
 
                     ValidateAudience = false,
                     ValidAudience = "https://sampleservice.example.com",
 
-                    ValidateLifetime = true,
+                    ValidateLifetime = true,                    
                 }
             });
 
