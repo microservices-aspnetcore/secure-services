@@ -29,7 +29,8 @@ class Program
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, 
                       ToUnixEpochDate(DateTime.Now).ToString(), 
-                    ClaimValueTypes.Integer64),        
+                    ClaimValueTypes.Integer64), 
+            new Claim("icanhazcheeseburger", "true"),       
         };
 
 
@@ -51,7 +52,13 @@ class Program
             new AuthenticationHeaderValue("Bearer", encodedJwt);
         var result = httpClient.GetAsync("http://localhost:5000/api/secured").Result;
         Console.WriteLine(result.StatusCode);
-        Console.WriteLine(result.Content.ToString());    
+        Console.WriteLine(result.Content.ReadAsStringAsync().Result);   
+
+        httpClient.DefaultRequestHeaders.Authorization = 
+            new AuthenticationHeaderValue("Bearer", encodedJwt);
+        var policyResult = httpClient.GetAsync("http://localhost:5000/api/secured/policy").Result;
+        Console.WriteLine(policyResult.StatusCode);
+        Console.WriteLine(policyResult.Content.ReadAsStringAsync().Result); 
     }
 
      private static long ToUnixEpochDate(DateTime date)

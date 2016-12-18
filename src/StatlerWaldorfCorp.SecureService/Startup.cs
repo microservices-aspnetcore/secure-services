@@ -24,6 +24,11 @@ namespace StatlerWaldorfCorp.Secureservice
         {                                   
             services.AddMvc();
             services.AddOptions();
+
+            services.AddAuthorization( options => {
+               options.AddPolicy("CheeseburgerPolicy",
+                        policy => policy.RequireClaim("icanhazcheeseburger", "true"));
+            });
         }
 
          public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
