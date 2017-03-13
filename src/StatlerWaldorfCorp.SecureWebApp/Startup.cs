@@ -22,7 +22,7 @@ namespace StatlerWaldorfCorp.SecureWebApp
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)                
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)                
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
